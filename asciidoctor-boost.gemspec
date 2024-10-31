@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.description   = 'This library contains macros that can be used in Boost documentation.'
   spec.homepage      = 'https://github.com/cppalliance/asciidoctor-boost'
   spec.license       = 'BSL-1.0'
-  spec.required_ruby_version = '>= 2.4.0'
+  spec.required_ruby_version = '>= 3.0'
 
   spec.metadata = {
     'bug_tracker_uri' => "#{spec.homepage}/issues",
