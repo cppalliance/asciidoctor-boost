@@ -1,20 +1,17 @@
 name: Publish Gem
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-
-# on:
-#   pull_request:
-#     branches:
-#       - main
-#     types: [closed]
+    types: [closed]
+    paths:
+      - 'lib/version.rb'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-
+    if: github.event.pull_request.merged == true  # only run on a merge
     permissions:
       id-token: write  # Required for OIDC authentication to RubyGems
       contents: write  # Required to push changes back to the repository and create GitHub releases
