@@ -1,0 +1,15 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: ^tests/test_data/.*\.html$
+  - repo: local
+    hooks:
+      - id: rubocop
+        name: RuboCop
+        entry: bundle exec rubocop --autocorrect  # or just `rubocop --auto-correct` if you don't use Bundler
+        language: system
+        types: [ruby]
+        files: \.rb$  # Only target Ruby files

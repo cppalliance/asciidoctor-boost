@@ -1,0 +1,90 @@
+name: Publish Gem
+
+on:
+  push:
+    branches:
+      - main
+
+# on:
+#   pull_request:
+#     branches:
+#       - main
+#     types: [closed]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write  # Required for OIDC authentication to RubyGems
+      contents: write  # Required to push changes back to the repository and create GitHub releases
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby
+          bundler-cache: true
+
+      - name: Extract version from tag
+        run: |
+          VERSION_TAG=${GITHUB_REF#refs/tags/v}
+
+      - name: Create Git tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag v${{ env.NEW_VERSION }} --force
+          git push origin v${{ env.NEW_VERSION }} --force
+
+      - name: Extract release notes from CHANGELOG.md
+        id: changelog
+        if: success()
+        run: |
+          CHANGELOG_TEXT=$(awk '/^## \[${{ env.VERSION }}\]/ {print; flag=1; next} /^## / && flag {flag=0} flag' CHANGELOG.md)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG_TEXT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Build gem
+        if: success()
+        run: gem build *.gemspec
+
+      - name: Check if release exists
+        id: check-release
+        run: |
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/cppalliance/asciidoctor-boost/releases/tags/${{ github.event.inputs.version }} \
+            | jq -r '.id');
+          echo "RELEASE_ID=$RELEASE_ID";
+          if [ "$RELEASE_ID" != "null" ]; then
+            echo "::set-output name=exists::true";
+            echo "Release already exists, skipping creation.";
+          else
+            echo "::set-output name=exists::false";
+          fi
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        if: steps.release-check.outputs.exists == 'false'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          release_name: "v${{ env.VERSION }}"
+          body: "${{ env.RELEASE_NOTES }}"
+          draft: false
+          prerelease: false
+
+      - name: Publish to RubyGems
+        if: success()
+        uses: rubygems/release-gem@v1
