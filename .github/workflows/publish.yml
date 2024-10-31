@@ -1,0 +1,76 @@
+name: Publish Gem
+
+on:
+  push:
+    tags:
+      - 'v*'  # Only triggers on tags prefixed with 'v'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write  # Required for OIDC authentication to RubyGems
+      contents: write  # Required to push changes back to the repository and create GitHub releases
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+          bundler-cache: true
+
+      - name: Extract version from tag
+        run: |
+          VERSION_TAG=${GITHUB_REF#refs/tags/v}
+
+      - name: Update version in lib/version.rb
+        run: |
+          sed -i "s|VERSION = '.*'|VERSION = '${{ env.VERSION }}'|" lib/version.rb
+          bundle install
+        shell: bash
+
+      - name: Commit and push version update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lib/version.rb
+          git add Gemfile.lock
+          git diff --cached --exit-code || git commit -m "Update version to ${{ env.VERSION }}"
+          git push
+
+      - name: Extract release notes from CHANGELOG.md
+        id: changelog
+        if: success()
+        run: |
+          CHANGELOG_TEXT=$(awk '/^## \[${{ env.VERSION }}\]/ {print; flag=1; next} /^## / && flag {flag=0} flag' CHANGELOG.md)
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG_TEXT" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        if: success()
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          release_name: "v${{ env.VERSION }}"
+          body: "${{ env.RELEASE_NOTES }}"
+          draft: false
+          prerelease: false
+
+
+      - name: Build gem
+        if: success()
+        run: gem build *.gemspec
+
+      - name: Publish to RubyGems
+        if: success()
+        uses: rubygems/release-gem@v1

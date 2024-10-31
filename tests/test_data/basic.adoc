@@ -1,0 +1,19 @@
+:noheader:
+:nofooter:
+:notitle:
+
+This is some text
+
+boost_at:/tools/build/doc/html/#_version_5_1_0[B2 version 5.1.0] boost_at:/tools/build/doc/html/#_version_5_2_0[B2 version 5.2.0]
+
+boost_gh:issue[geometry, 1231]
+
+boost_gh:pr[charconv, 321]
+
+Non-phrase: [.library]#Hi!#
+
+Phrase: boost_phrase:library[Hi!]
+
+Nested: boost_phrase:library[boost_at:/libs/charconv/[Charconv:]]
+
+End
