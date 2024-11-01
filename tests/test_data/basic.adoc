@@ -14,6 +14,6 @@ Non-phrase: [.library]#Hi!#
 
 Phrase: boost_phrase:library[Hi!]
 
-Nested: boost_phrase:library[boost_at:/libs/charconv/[Charconv:]]
+Nested: boost_phrase:library[Charconv:,/libs/charconv/]
 
 End
