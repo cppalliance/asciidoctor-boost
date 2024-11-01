@@ -1,6 +1,10 @@
 ## [Unreleased]
 
-## [0.1.4] - 2024-10-29
+## [0.1.6] - 2024-10-29
+
+- Fix github links text
+
+## [0.1.5] - 2024-10-29
 
 - Fix phrase nesting
 
