@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    asciidoctor-boost (0.1.0)
+    asciidoctor-boost (0.1.1)
       rake (~> 13.2)
 
 GEM
