@@ -29,9 +29,10 @@ jobs:
           ruby-version: ruby
           bundler-cache: true
 
-      - name: Extract version from tag
+      - name: Extract version from lib/version.rb
         run: |
-          VERSION_TAG=${GITHUB_REF#refs/tags/v}
+          VERSION=$(ruby -e "require './lib/version'; puts Boost::VERSION")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create Git tag
         run: |
