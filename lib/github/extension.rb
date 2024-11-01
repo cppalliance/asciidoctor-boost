@@ -17,9 +17,9 @@ class GithubInlineMacro < Asciidoctor::Extensions::InlineMacroProcessor
   def process(parent, target, attrs)
     content = "Target '#{target}' is invalid, check your syntax. Should be 'issue' or 'pr', not #{target}."
     if target == 'issue'
-      content = "https://github.com/boostorg/#{attrs['repo']}/issues/#{attrs['number']}[#{attrs['number']}]"
+      content = "https://github.com/boostorg/#{attrs['repo']}/issues/#{attrs['number']}[\##{attrs['number']}]"
     elsif target == 'pr'
-      content = "https://github.com/boostorg/#{attrs['repo']}/pull/#{attrs['number']}[#{attrs['number']}]"
+      content = "https://github.com/boostorg/#{attrs['repo']}/pull/#{attrs['number']}[PR\##{attrs['number']}]"
     end
     create_inline_pass parent, content
   end
