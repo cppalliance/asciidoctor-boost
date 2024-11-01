@@ -4,6 +4,10 @@
 
 - (testing workflows)
 
+## [0.1.3] - 2024-10-29
+
+- (testing workflows)
+
 ## [0.1.1] - 2024-10-29
 
 - Ruby version bump (testing workflows)
