@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
     'bug_tracker_uri' => "#{spec.homepage}/issues",
     'homepage_uri' => spec.homepage.to_s,
     'source_code_uri' => spec.homepage.to_s,
-    'changelog_uri' => "#{spec.homepage}/CHANGELOG.md"
+    'changelog_uri' => "#{spec.homepage}/blob/main/CHANGELOG.md"
   }
 
   spec.require_paths = ['lib']
