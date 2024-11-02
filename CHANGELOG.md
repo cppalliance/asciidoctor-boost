@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.1.7] - 2024-10-29
+
+- Documentation tweaks (release process test)
+
 ## [0.1.6] - 2024-10-29
 
 - Fix github links text
